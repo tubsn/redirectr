@@ -29,4 +29,5 @@ $routes->get('/admin/{id:\d+}/delete/{token}', 'Usermanagement@delete');
 $routes->post('/admin/{id:\d+}', 'Usermanagement@update');
 
 $routes->get('/cms', 'Redirect@cms');
+$routes->get('/redirect/{id:\d+}', 'Redirect@info');
 $routes->get('/{shortURL}', 'Redirect@find');

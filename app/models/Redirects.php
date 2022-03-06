@@ -17,6 +17,10 @@ class Redirects extends Model
 
 	}
 
+	public function stats($id) {
+		return $this->entry_with_tracking($id);
+	}
+
 	public function list() {
 		return $this->entries_with_tracking();
 	}
@@ -25,7 +29,7 @@ class Redirects extends Model
 		$redirect = $this->url_from_short($shortURL);
 
 		if ($redirect) {
-			$this->tracking->count($redirect['id']);
+			$this->tracking->track($redirect['id']);
 			return $redirect['url'];
 		}
 
@@ -45,6 +49,23 @@ class Redirects extends Model
 
 	}
 
+	private function entry_with_tracking($id) {
+
+		$table = $this->db->table;
+		$SQLstatement = $this->db->connection->prepare(
+			"SELECT * FROM $table WHERE id = :id"
+		);
+		$SQLstatement->execute([':id' => $id]);
+		$redirect = $SQLstatement->fetch();
+
+		$hits = $this->tracking->stats($id);
+		$redirect['hits'] = count($hits);
+		$redirect['events'] = $hits;
+
+		return $redirect;
+
+	}
+
 	private function entries_with_tracking($filter = null) {
 
 		$table = $this->db->table;
@@ -53,7 +74,7 @@ class Redirects extends Model
 		if (is_null($filter)) {
 
 			$SQLstatement = $this->db->connection->prepare(
-				"SELECT id,shorturl,url,created, COUNT(redirect_id) as clicks
+				"SELECT id,shorturl,url,created, COUNT(redirect_id) as hits
 				 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
 				 GROUP BY id"
 			);
@@ -64,7 +85,7 @@ class Redirects extends Model
 		else {
 
 			$SQLstatement = $this->db->connection->prepare(
-				"SELECT id,shorturl,url,created, COUNT(redirect_id) as clicks
+				"SELECT id,shorturl,url,created, COUNT(redirect_id) as hits
 				 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
 				 WHERE `shorturl` = :filter
 				 GROUP BY id"

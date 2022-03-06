@@ -18,10 +18,17 @@ class Redirect extends Controller {
 
 	}
 
+	public function info($id) {
+
+		dd($this->Redirects->stats($id));
+
+
+
+	}
+
 	public function cms() {
 
-		dd($this->Redirects->list());
-
+		$this->view->redirects = $this->Redirects->list();
 		$this->view->render('redirects/index');
 
 	}
