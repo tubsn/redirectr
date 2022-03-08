@@ -3,6 +3,8 @@
 namespace app\models;
 use \flundr\database\SQLdb;
 use \flundr\mvc\Model;
+use \flundr\auth\Auth;
+use \flundr\controlpanel\models\User;
 
 class Redirects extends Model
 {
@@ -17,12 +19,91 @@ class Redirects extends Model
 
 	}
 
-	public function stats($id) {
-		return $this->entry_with_tracking($id);
+	public function details($id) {
+
+		$entry = $this->entry_with_tracking($id);
+
+		$userDB = new User;
+		$creator = $userDB->get($entry['created_by'],['firstname']);
+		$editor = $userDB->get($entry['edited_by'],['firstname']);
+		if ($creator) {$entry['created_by_name'] = implode(' ', $creator);}
+		if ($editor) {$entry['edited_by_name'] = implode(' ', $editor);}
+
+		return $entry;
 	}
 
-	public function list() {
-		return $this->entries_with_tracking();
+	public function list($filter = null) {
+		return $this->entries_with_tracking($filter);
+	}
+
+
+
+	public function new($data) {
+
+		$data = $this->sanitize_urls($data);
+		$data['created_by'] = Auth::get('id');
+
+		try {
+			$this->create($data);
+		} catch (\PDOException $e) {
+
+			if ($e->errorInfo[1] == 1062) {
+				throw new \Exception("Achtung: KurzURL ist Bereits vergeben", 1062);
+			}
+
+			throw new \Exception("Fehler beim Speichern: " . $e->getMessage(), 404);
+
+		}
+
+	}
+
+
+	public function set($data, $id) {
+
+		$data = $this->sanitize_urls($data);
+		$data['edited_by'] = Auth::get('id');
+
+		try {
+			$this->update($data,$id);
+		} catch (\PDOException $e) {
+
+			if ($e->errorInfo[1] == 1062) {
+				throw new \Exception("Achtung: KurzURL ist Bereits vergeben", 1062);
+			}
+			throw new \Exception("Fehler beim Speichern", 404);
+
+		}
+
+	}
+
+	public function remove_tracking($id) {
+		$this->tracking->delete($id);
+	}
+
+	private function sanitize_urls($data) {
+
+		if (empty($data['shorturl'])) {throw new \Exception("Bitte Kurzlink ausfüllen", 400);}
+		if (empty($data['url'])) {throw new \Exception("Bitte ZielURL ausfüllen", 400);}
+
+		$data['url'] = $this->prefixHTTP($data['url']);
+		$data['shorturl'] = $this->remove_trailing_slash($data['shorturl']);
+		if ($this->has_slashes($data['shorturl'])) {
+			throw new \Exception("bitte keine Verschachtelten URLs z.B. /lausitz/cottbus", 400);
+		}
+		return $data;
+	}
+
+	private function has_slashes($url) {
+		if (count(explode('/', $url)) > 1) {return true;}
+		return false;
+	}
+
+	private function remove_trailing_slash($url) {
+		return ltrim($url, '/');
+	}
+
+	private function prefixHTTP($url) {
+		return preg_replace('/^(?!https?:\/\/)/', 'http://', $url);
 	}
 
 	public function url($shortURL) {
@@ -34,6 +115,21 @@ class Redirects extends Model
 		}
 
 		return $this->defaultURL;
+	}
+
+	public function global_stats() {
+
+		$table = $this->db->table;
+		$trackingTable = $this->tracking->table();
+		$SQLstatement = $this->db->connection->prepare(
+			"SELECT
+				(SELECT count(*) FROM $table) as redirects,
+				(SELECT count(*) FROM $trackingTable) as hits"
+		);
+
+		$SQLstatement->execute();
+		return $SQLstatement->fetch();
+
 	}
 
 
@@ -57,6 +153,8 @@ class Redirects extends Model
 		);
 		$SQLstatement->execute([':id' => $id]);
 		$redirect = $SQLstatement->fetch();
+
+		if (empty($redirect)) {return null;}
 
 		$hits = $this->tracking->stats($id);
 		$redirect['hits'] = count($hits);
@@ -87,10 +185,10 @@ class Redirects extends Model
 			$SQLstatement = $this->db->connection->prepare(
 				"SELECT id,shorturl,url,created, COUNT(redirect_id) as hits
 				 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
-				 WHERE `shorturl` = :filter
+				 WHERE `shorturl` LIKE :filter
 				 GROUP BY id"
 			);
-			$SQLstatement->execute([':filter' => $filter]);
+			$SQLstatement->execute([':filter' => '%%'.$filter . '%%']);
 
 		}
 

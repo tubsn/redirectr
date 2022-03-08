@@ -7,6 +7,15 @@ $routes->post('/article/{id:\d+}', 'Controller@Action'); With ID-Parameter (Nume
 */
 
 
+$routes->get('/', 'Redirect@to_main_page');
+$routes->get('/cms', 'Redirect@cms');
+$routes->get('/cms/stats', 'Redirect@stats');
+$routes->get('/redirect/create', 'Redirect@create');
+$routes->post('/redirect/create', 'Redirect@save');
+$routes->get('/redirect/{id:\d+}', 'Redirect@edit');
+$routes->get('/redirect/{id:\d+}/remove', 'Redirect@delete');
+$routes->post('/redirect/{id:\d+}', 'Redirect@update');
+$routes->get('/search', 'Redirect@search');
 
 // Authentication Routes
 $routes->get('/login', 'Authentication@login');
@@ -28,6 +37,5 @@ $routes->get('/admin/{id:\d+}', 'Usermanagement@show');
 $routes->get('/admin/{id:\d+}/delete/{token}', 'Usermanagement@delete');
 $routes->post('/admin/{id:\d+}', 'Usermanagement@update');
 
-$routes->get('/cms', 'Redirect@cms');
-$routes->get('/redirect/{id:\d+}', 'Redirect@info');
+// Generall Redirect Capture All
 $routes->get('/{shortURL}', 'Redirect@find');

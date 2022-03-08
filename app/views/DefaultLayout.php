@@ -8,12 +8,12 @@ class DefaultLayout extends htmlView {
 	// Page Header Information is available in the Templates
 	// as a $page Array. It can be accessed via $page['title']
 
-	public $title = 'Redirectr APP';
+	public $title = 'redirectR';
 	public $description = 'Redirection tool with integrated Tracking';
 	public $css = ['/styles/flundr/css/defaults.css', '/styles/css/main.css'];
 	public $fonts = 'https://fonts.googleapis.com/css?family=Fira+Sans:400,400i,600|Fira+Sans+Condensed:400,600';
 	public $js = '/styles/js/main.js';
-	public $framework = null;
+	public $framework = ['/styles/flundr/components/fl-dialog.js', 'https://cdn.jsdelivr.net/npm/apexcharts'];
 	public $meta = [
 		'author' => 'flundr',
 		'robots' => 'noindex, nofollow',
@@ -36,7 +36,7 @@ class DefaultLayout extends htmlView {
 
 	public $templates = [
 		'tinyhead' => 'layout/html-doc-header',
-		'header' => null,
+		'header' => 'layout/navi',
 		'main' => null,
 		'footer' => null,
 		'tinyfoot' => 'layout/html-doc-footer',
