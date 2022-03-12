@@ -8,7 +8,7 @@ class Redirect extends Controller {
 
 	public function __construct() {
 		$this->view('DefaultLayout');
-		$this->models('Redirects,Tracking');
+		$this->models('Redirects,Tracking,QRGenerator');
 		if (!Auth::logged_in() && !Auth::valid_ip()) {Auth::loginpage();}
 	}
 
@@ -39,6 +39,7 @@ class Redirect extends Controller {
 
 		$this->view->redirect = $redirect;
 		$this->view->chart = $this->Tracking->hits_by_day($id);
+		$this->view->qrcode = $this->QRGenerator->go('https://lr.de/' . $redirect['shorturl']);
 
 		$this->view->render('redirects/edit');
 	}
@@ -61,6 +62,13 @@ class Redirect extends Controller {
 	// End Crud
 
 	public function cms() {
+
+		/*
+		$qr = (new QRCode)->render('https://www.lr-online.de');
+
+		echo '<img src="'.$qr.'">';
+		die;
+		*/
 
 		$this->view->stats = $this->Redirects->global_stats();
 		$this->view->redirects = $this->Redirects->list();
