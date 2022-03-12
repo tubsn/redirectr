@@ -1,6 +1,7 @@
 {
     "require": {
-        "flundr/core": "^2.0"
+        "flundr/core": "^2.0",
+        "chillerlan/php-qrcode": "dev-main"
     },
     "autoload": {
         "psr-4": {

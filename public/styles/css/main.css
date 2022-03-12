@@ -75,6 +75,7 @@ animation: menu-scroll-in 0.1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;}
 .compare-logo {background:url('/styles/img/compare-logo-white.svg') no-repeat; background-size:100%; display:inline-block; width:90px; height:18px; position: relative; top: 6px;}
 .compare-logo-li:hover .compare-logo {background:url('/styles/img/compare-logo-black.svg') no-repeat; background-size:100%;}
 
+.login-icon svg {max-height:15px; position:relative; top:2px;}
 .login-icon:hover #loginHeadIcon {fill: #333333}
 
 .sub-nav {display:flex; justify-content:space-between; width:90%; margin:0 auto;}
@@ -111,7 +112,7 @@ tr th.text-left {text-align:left;}
 tr th.text-right {text-align:right;}
 tr th.text-center {text-align:center;}
 
-.display-hits {font-size:6em; text-align:right;}
+.display-hits {font-size:6em; text-align:right; margin-bottom:0.7em;}
 .display-hits-img {width:100px;}
 .display-hits-text {display:inline-block; font-size:0.4em; /*transform: rotate(-90deg);*/  margin-right:0.1em;}
 
@@ -123,7 +124,7 @@ table th.dir-d {background-image: linear-gradient(#4c739d 0%, #3b618c 82%, #d1d7
 .icon-delete:hover {opacity:0.4;}
 .icon-edit {opacity:0.2; position:relative;top:2px; width:23px;}
 
-.edit-layout {display:grid; grid-template-columns: 3fr 1fr; grid-gap:2em;}
+.edit-layout {display:grid; grid-template-columns: 3fr 1fr 1fr; grid-gap:2em; align-items: center; justify-content: space-between;}
 
 .page-footer {font-size:0.8em; margin-bottom:2em; margin-top:.5em;}
 

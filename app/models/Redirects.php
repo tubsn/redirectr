@@ -85,12 +85,20 @@ class Redirects extends Model
 		if (empty($data['shorturl'])) {throw new \Exception("Bitte Kurzlink ausfüllen", 400);}
 		if (empty($data['url'])) {throw new \Exception("Bitte ZielURL ausfüllen", 400);}
 
+		$data['url'] = $this->trim_input($data['url']);
+		$data['shorturl'] = $this->trim_input($data['shorturl']);
+
 		$data['url'] = $this->prefixHTTP($data['url']);
 		$data['shorturl'] = $this->remove_trailing_slash($data['shorturl']);
 		if ($this->has_slashes($data['shorturl'])) {
 			throw new \Exception("bitte keine Verschachtelten URLs z.B. /lausitz/cottbus", 400);
 		}
 		return $data;
+	}
+
+
+	private function trim_input($url) {
+		return trim($url);
 	}
 
 	private function has_slashes($url) {
@@ -174,7 +182,7 @@ class Redirects extends Model
 			$SQLstatement = $this->db->connection->prepare(
 				"SELECT id,shorturl,url,created, COUNT(redirect_id) as hits
 				 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
-				 GROUP BY id"
+				 GROUP BY id ORDER BY created DESC"
 			);
 			$SQLstatement->execute();
 
@@ -186,7 +194,7 @@ class Redirects extends Model
 				"SELECT id,shorturl,url,created, COUNT(redirect_id) as hits
 				 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
 				 WHERE `shorturl` LIKE :filter
-				 GROUP BY id"
+				 GROUP BY id ORDER BY created DESC"
 			);
 			$SQLstatement->execute([':filter' => '%%'.$filter . '%%']);
 

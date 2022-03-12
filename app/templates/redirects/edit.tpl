@@ -22,6 +22,9 @@
 
 	</form>
 
+	<figure style="text-center; max-width:200px; justify-self: center;">
+	<?=$qrcode?>
+	</figure>
 
 
 	<div class="display-hits">
