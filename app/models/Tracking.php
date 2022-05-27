@@ -17,11 +17,18 @@ class Tracking extends Model
 
 	}
 
-	public function hits_by_day($id) {
+	public function hits_by_day($id, $created = null) {
 
 		$hits = $this->daily_hits($id);
+		$daterange = $this->date_range(date('Y-m-d', strtotime('-90 days')),date('Y-m-d'));
 
-		$daterange = $this->date_range(date('Y-m-d', strtotime('-14 days')),date('Y-m-d'));
+		if ($created) {
+			$sinceCreated = $this->date_range($created,date('Y-m-d'));
+			if (iterator_count($sinceCreated) <= 365) {
+				$daterange = $sinceCreated;
+			}
+		}
+
 		$dates = [];
 		foreach ($daterange as $date) {
 			$key = $date->format("Y-m-d");

@@ -42,7 +42,7 @@ class CMS extends Controller {
 		if (empty($redirect)) {throw new \Exception("Entry not Found", 404);}
 
 		$this->view->redirect = $redirect;
-		$this->view->chart = $this->Tracking->hits_by_day($id);
+		$this->view->chart = $this->Tracking->hits_by_day($id, $redirect['created']);
 		$this->view->qrcode = $this->QRGenerator->go('https://lr.de/' . $redirect['shorturl']);
 
 		$this->view->render('redirects/edit');
