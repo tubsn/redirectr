@@ -9,7 +9,7 @@ use \flundr\controlpanel\models\User;
 class Redirects extends Model
 {
 
-	public $defaultURL = '/';
+	public $defaultURL = 'https://www.lr-online.de';
 
 	public function __construct() {
 
@@ -32,10 +32,13 @@ class Redirects extends Model
 		return $entry;
 	}
 
-	public function list($filter = null) {
-		return $this->entries_with_tracking($filter);
+	public function list($category = null, $offset = null, $limit = null) {
+		return $this->entries_with_tracking(null, $category, $offset, $limit);
 	}
 
+	public function find($filter = null, $offset = null, $limit = null) {
+		return $this->entries_with_tracking($filter, null, $offset, $limit);
+	}
 
 
 	public function new($data) {
@@ -118,6 +121,7 @@ class Redirects extends Model
 		$redirect = $this->url_from_short($shortURL);
 
 		if ($redirect) {
+			$redirect['url'] = html_entity_decode($redirect['url']);
 			$this->tracking->track($redirect['id']);
 			return $redirect['url'];
 		}
@@ -125,10 +129,43 @@ class Redirects extends Model
 		return $this->defaultURL;
 	}
 
-	public function global_stats() {
+	public function count($category = null) {
+		$table = $this->db->table;
+
+		if ($category) {
+			$SQLstatement = $this->db->connection->prepare(
+				"SELECT count(*) as items FROM $table WHERE `category` = :category"
+			);
+
+			$SQLstatement->execute([':category' => $category]);
+			return $SQLstatement->fetch()['items'];
+		}
+
+		$SQLstatement = $this->db->connection->prepare(
+			"SELECT count(*) as items FROM $table"
+		);
+
+		$SQLstatement->execute();
+		return $SQLstatement->fetch()['items'];
+
+	}
+
+	public function category_stats($category = null) {
 
 		$table = $this->db->table;
 		$trackingTable = $this->tracking->table();
+
+		if ($category) {
+			$SQLstatement = $this->db->connection->prepare(
+				"SELECT
+					(SELECT count(*) FROM $table WHERE `category` = :category) as redirects,
+					(SELECT count(*) FROM $trackingTable LEFT JOIN $table ON redirect_id = id WHERE `category` = :category) as hits"
+			);
+
+			$SQLstatement->execute([':category' => $category]);
+			return $SQLstatement->fetch();
+		}
+
 		$SQLstatement = $this->db->connection->prepare(
 			"SELECT
 				(SELECT count(*) FROM $table) as redirects,
@@ -172,37 +209,44 @@ class Redirects extends Model
 
 	}
 
-	private function entries_with_tracking($filter = null) {
+	private function entries_with_tracking($filter = null, $category = null, $offset = null, $limit = null) {
+
+		if (!$offset) {$offset = 0;}
+		if (!$limit) {$limit = 1000;}
 
 		$table = $this->db->table;
 		$trackingTable = $this->tracking->table();
 
-		if (is_null($filter)) {
+		$preparedVariables = [];
+		$whereQuerys = [];
+		$whereString = '';
 
-			$SQLstatement = $this->db->connection->prepare(
-				"SELECT id,shorturl,url,created, COUNT(redirect_id) as hits
-				 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
-				 GROUP BY id ORDER BY created DESC"
-			);
-			$SQLstatement->execute();
-
+		if ($filter) {
+			array_push($whereQuerys, "`shorturl` LIKE :filter");
+			$preparedVariables[':filter'] = '%%'.$filter . '%%';
 		}
 
-		else {
-
-			$SQLstatement = $this->db->connection->prepare(
-				"SELECT id,shorturl,url,created, COUNT(redirect_id) as hits
-				 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
-				 WHERE `shorturl` LIKE :filter
-				 GROUP BY id ORDER BY created DESC"
-			);
-			$SQLstatement->execute([':filter' => '%%'.$filter . '%%']);
-
+		if ($category) {
+			array_push($whereQuerys, "`category` = :category");
+			$preparedVariables[':category'] = $category;
 		}
+
+		if (count($whereQuerys)>0) {
+			$whereQuerys = implode(' AND ', $whereQuerys);
+			$whereString = 'WHERE ' . $whereQuerys;
+		}
+
+		$SQLstatement = $this->db->connection->prepare(
+			"SELECT id,shorturl,category,url,created, COUNT(redirect_id) as hits
+			 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
+			 $whereString
+			 GROUP BY id ORDER BY created DESC LIMIT $offset, $limit"
+		);
+
+		$SQLstatement->execute($preparedVariables);
 
 		return $SQLstatement->fetchALL(\PDO::FETCH_UNIQUE);
 
 	}
-
 
 }

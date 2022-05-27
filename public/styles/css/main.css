@@ -14,7 +14,6 @@ main {max-width:70%;}
 }
 
 /* Navigation */
-
 .main-nav {background-color:#213e5e; margin-bottom:4em; padding:0em; color:white;}
 .main-nav {display:flex; justify-content:space-between; padding-left: 1em; padding-right:1em;}
 
@@ -100,6 +99,16 @@ background-repeat: no-repeat; transition: opacity 0.4s
 
 /* End Navigation */
 
+/* elements */
+a.plain {text-decoration:none; color:inherit;}
+
+.long-link {font-size:0.8em; display:flex; max-width:600px;}
+
+@media only screen and (max-width: 1200px) {.long-link {max-width:200px;} }
+
+
+.long-link div {max-width: 90%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.external-icon {margin-left:0.3em; width:40px;}
 
 /* Forms */
 
@@ -107,6 +116,7 @@ background-repeat: no-repeat; transition: opacity 0.4s
 .form-2-cols {display:flex; justify-content:space-between; align-items:flex-start; align-content:center; gap:1em;}
 .form-2-cols label {width:100%;}
 
+.form-edit-link select {background-color:white;}
 
 tr th.text-left {text-align:left;}
 tr th.text-right {text-align:right;}
@@ -135,3 +145,32 @@ b {font-family: var(--font-highlight)}
 .edit-info-box-content:nth-child(2) {background-color:#e9f2fb;}
 
 .page-footer {margin-bottom:2em;}
+
+
+/* Pager */
+ul.pager {display: flex;
+flex-wrap: wrap;
+flex-direction: row;
+/* justify-content: space-around; */
+align-items: center;
+align-content: flex-start;
+margin-top:40px;
+margin-bottom:40px;
+list-style-type: none;
+padding:0;
+}
+
+ul.pager li {flex: 0 0 auto;}
+
+ul.pager li:first-of-type {margin-left:0px; flex: 0.5 0 auto; text-align:right;}
+ul.pager li:last-of-type {margin-right:0px; flex: 0.5 0 auto; text-align:left;}
+
+ul.pager li a, a.archiv {color:white; background:#444; padding:10px 20px; border-radius:3px;
+white-space:nowrap; transition: background-color 0.3s; text-decoration:none;
+margin:3px; width:13px; text-align:Center; color:white; display:inline-block}
+
+ul.pager li a:hover, a.archiv:hover {background:#213e5e; transition: background-color 0s}
+
+/*ul.pager li a.active {background:#2fcc8f; color:white;}*/
+ul.pager li a.active {background:#d4d4d4;; color:#696969;}
+ul.pager li a.disabled {background:#ececec; color:#b1b1b1;}

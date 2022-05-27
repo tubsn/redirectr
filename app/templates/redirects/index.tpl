@@ -14,6 +14,7 @@ Kurzlink Management System<img src="/styles/img/fire.png" style="margin-left:.2e
 		<tr>
 			<th>KurzURL</th>
 			<th>ZielURL</th>
+			<th>Kategorie</th>
 			<th>Erstellt</th>
 			<th class="text-right">Hits</th>
 			<th class="text-center" colspan="2">Optionen</th>
@@ -23,8 +24,13 @@ Kurzlink Management System<img src="/styles/img/fire.png" style="margin-left:.2e
 <?php foreach ($redirects as $id => $redirect): ?>
 	<tr>
 		<td><a href="/redirect/<?=$id?>">/<?=$redirect['shorturl']?></a></td>
-		<td><a href="/redirect/<?=$id?>"><?=$redirect['url']?></a> <small><a class="noline" target="_blank" href="<?=$redirect['url']?>">
-&nbsp;&#128194;</a></small></td>
+		<td>
+			<div class="long-link">
+				<div><a class="plain" href="/redirect/<?=$id?>"><?=$redirect['url']?></a></div>
+				<div class="external-icon"><a class="plain" target="_blank" href="<?=$redirect['url']?>">&#128194;</a></div>
+			</div>
+		</td>
+		<td><?=$redirect['category'] ?? '-'?></td>
 		<td><?=formatDate($redirect['created'], 'Y-m-d')?></td>
 		<td class="text-right"><?=$redirect['hits']?></td>
 		<td class="text-right"><a href="/redirect/<?=$id?>">Edit</a></td>
@@ -39,6 +45,10 @@ Kurzlink Management System<img src="/styles/img/fire.png" style="margin-left:.2e
 <?php endforeach; ?>
 	</tbody>
 </table>
+
+<?php if (isset($pager)): ?>
+	<?=$pager?>
+<?php endif; ?>
 
 <?php if (isset($stats)): ?>
 	<div class="text-center">

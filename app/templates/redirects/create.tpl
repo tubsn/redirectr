@@ -11,6 +11,16 @@
 		<input type="text" required placeholder="z.B. /foodies" name="shorturl" value="">
 	</label>
 
+	<label>Kategorie:
+		<select name="category">
+			<?php foreach (CATEGORIES as $category): ?>
+				<option value="<?=$category?>"><?=$category?></option>
+			<?php endforeach; ?>
+		</select>
+	</label>
+	</fieldset>
+
+	<fieldset>
 	<label>ZielURL:
 		<input type="text" required placeholder="z.B. https://www.lr-online.de/ratgeber/foodies" name="url" value="">
 	</label>

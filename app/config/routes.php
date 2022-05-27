@@ -8,14 +8,15 @@ $routes->post('/article/{id:\d+}', 'Controller@Action'); With ID-Parameter (Nume
 
 
 $routes->get('/', 'Redirect@to_main_page');
-$routes->get('/cms', 'Redirect@cms');
-$routes->get('/cms/stats', 'Redirect@stats');
-$routes->get('/redirect/create', 'Redirect@create');
-$routes->post('/redirect/create', 'Redirect@save');
-$routes->get('/redirect/{id:\d+}', 'Redirect@edit');
-$routes->get('/redirect/{id:\d+}/remove', 'Redirect@delete');
-$routes->post('/redirect/{id:\d+}', 'Redirect@update');
-$routes->get('/search', 'Redirect@search');
+$routes->get('/cms', 'CMS@cms');
+$routes->get('/cms/stats', 'CMS@stats');
+$routes->get('/cms/category/{category}', 'CMS@cms');
+$routes->get('/redirect/create', 'CMS@create');
+$routes->post('/redirect/create', 'CMS@save');
+$routes->get('/redirect/{id:\d+}', 'CMS@edit');
+$routes->get('/redirect/{id:\d+}/remove', 'CMS@delete');
+$routes->post('/redirect/{id:\d+}', 'CMS@update');
+$routes->get('/search', 'CMS@search');
 
 // Authentication Routes
 $routes->get('/login', 'Authentication@login');
@@ -30,12 +31,14 @@ $routes->get('/profile/edit', 'Authentication@edit_profile');
 $routes->post('/profile/edit', 'Authentication@edit_profile');
 
 // Usermanagement / Admin Routes
+/*
 $routes->get('/admin', 'Usermanagement@index');
 $routes->get('/admin/new', 'Usermanagement@new');
 $routes->post('/admin', 'Usermanagement@create');
 $routes->get('/admin/{id:\d+}', 'Usermanagement@show');
 $routes->get('/admin/{id:\d+}/delete/{token}', 'Usermanagement@delete');
 $routes->post('/admin/{id:\d+}', 'Usermanagement@update');
+*/
 
 // Generall Redirect Capture All
 $routes->get('/{shortURL}', 'Redirect@find');

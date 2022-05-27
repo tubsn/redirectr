@@ -4,19 +4,33 @@
 
 <div class="edit-layout">
 
-
 	<form class="form-edit-link" action="" method="post">
 
 		<fieldset class="form-2-cols">
 
-		<label>Kurzurl:
+		<label>KurzURL:
 			<input type="text" required name="shorturl" placeholder="z.B. /foodies" value="<?=$redirect['shorturl']?>">
 		</label>
 
+		<label>Kategorie:
+			<select name="category">
+				<?php if ($redirect['category']): ?>
+				<option selected value="<?=$redirect['category']?>"><?=$redirect['category']?></option>
+				<?php endif ?>
+				<?php foreach (CATEGORIES as $category): ?>
+					<?php if ($redirect['category'] == $category) {continue;} ?>
+					<option value="<?=$category?>"><?=$category?></option>
+				<?php endforeach; ?>
+			</select>
+		</label>
+		</fieldset>
+
+		<fieldset>
 		<label>ZielURL:
 			<input type="text" required name="url" placeholder="z.B. https://www.lr-online.de/ratgeber/foodies" value="<?=$redirect['url']?>">
 		</label>
 		</fieldset>
+
 
 		<button type="submit">Änderung speichern</button> <a href="/cms" class="button light">abbrechen und zurück</a>
 
