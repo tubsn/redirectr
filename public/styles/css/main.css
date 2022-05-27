@@ -113,7 +113,7 @@ a.plain {text-decoration:none; color:inherit;}
 /* Forms */
 
 .form-edit-link {display:block; padding:1em; background:var(--light-grey); }
-.form-2-cols {display:flex; justify-content:space-between; align-items:flex-start; align-content:center; gap:1em;}
+.form-2-cols {display:flex; justify-content:space-between; align-items:center; align-content:center; gap:1em;}
 .form-2-cols label {width:100%;}
 
 .form-edit-link select {background-color:white;}

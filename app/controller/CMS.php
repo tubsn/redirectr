@@ -53,7 +53,9 @@ class CMS extends Controller {
 			'shorturl' => $_POST['shorturl'],
 			'url' => $_POST['url'],
 			'category' => $_POST['category'],
+			'utm' => $_POST['utm'] ?? 0,
 		];
+
 		$this->Redirects->set($data, $id);
 		$this->view->redirect('/cms');
 	}

@@ -23,12 +23,22 @@
 				<?php endforeach; ?>
 			</select>
 		</label>
+
+		<label>UTM-Automatik:<br/>
+			<?php if ($redirect['utm']): ?>
+			<input type="checkbox" name="utm" checked value="1">UTM Parameter an Link hängen
+			<?php else: ?>
+			<input type="checkbox" name="utm" value="1">UTM Parameter an Link hängen
+			<?php endif; ?>
+		</label>
+
 		</fieldset>
 
 		<fieldset>
 		<label>ZielURL:
 			<input type="text" required name="url" placeholder="z.B. https://www.lr-online.de/ratgeber/foodies" value="<?=$redirect['url']?>">
 		</label>
+
 		</fieldset>
 
 

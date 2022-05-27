@@ -14,8 +14,9 @@ Kurzlink Management System<img src="/styles/img/fire.png" style="margin-left:.2e
 		<tr>
 			<th>KurzURL</th>
 			<th>ZielURL</th>
+			<th>UTM</th>
 			<th>Kategorie</th>
-			<th>Erstellt</th>
+			<!--<th>Erstellt</th>-->
 			<th class="text-right">Hits</th>
 			<th class="text-center" colspan="2">Optionen</th>
 		</tr>
@@ -30,8 +31,10 @@ Kurzlink Management System<img src="/styles/img/fire.png" style="margin-left:.2e
 				<div class="external-icon"><a class="plain" target="_blank" href="<?=$redirect['url']?>">&#128194;</a></div>
 			</div>
 		</td>
+
+		<td><?=$redirect['utm'] ? '&#10003;' : '-' ?></td>
 		<td><?=$redirect['category'] ?? '-'?></td>
-		<td><?=formatDate($redirect['created'], 'Y-m-d')?></td>
+		<!--<td><?=formatDate($redirect['created'], 'Y-m-d')?></td>-->
 		<td class="text-right"><?=$redirect['hits']?></td>
 		<td class="text-right"><a href="/redirect/<?=$id?>">Edit</a></td>
 		<td class="text-right">
@@ -56,8 +59,10 @@ Kurzlink Management System<img src="/styles/img/fire.png" style="margin-left:.2e
 	</div>
 <?php endif; ?>
 
+<!--
 <footer class="page-footer text-center">
 	<p>redirectR. running on <a class="noline" target="_blank" href="https://github.com/tubsn/flundr"><b>flundr</b></a></p>
 </footer>
+-->
 
 </main>

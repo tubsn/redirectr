@@ -18,6 +18,10 @@
 			<?php endforeach; ?>
 		</select>
 	</label>
+
+	<label>UTM-Automatik:<br/>
+		<input type="checkbox" name="utm" value="1"> UTM Parameter an Link hängen
+	</label>
 	</fieldset>
 
 	<fieldset>

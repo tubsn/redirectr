@@ -182,12 +182,32 @@ class Redirects extends Model
 
 		$table = $this->db->table;
 		$SQLstatement = $this->db->connection->prepare(
-			"SELECT id,url FROM $table WHERE `shorturl` = :shortURL"
+			"SELECT id,shorturl,url,utm FROM $table WHERE `shorturl` = :shortURL"
 		);
 
 		$SQLstatement->execute([':shortURL' => $shortURL]);
-		return $SQLstatement->fetch();
+		$urlData = $SQLstatement->fetch();
 
+		if (empty($urlData)) {return null;}
+		$urlData = $this->auto_utm_parameters($urlData);
+
+		return $urlData;
+
+	}
+
+	private function auto_utm_parameters($data) {
+
+		if (!$data['utm']) {return $data;}
+
+		$additionalParams = [
+			'utm_source' => 'redirectr',
+			'utm_medium' => 'shortlink',
+			'utm_campaign' => $data['shorturl'],
+		];
+
+		$data['url'] .= (strpos($data['url'], '?') ? '&' : '?') . http_build_query($additionalParams);
+
+		return $data;
 	}
 
 	private function entry_with_tracking($id) {
@@ -237,7 +257,7 @@ class Redirects extends Model
 		}
 
 		$SQLstatement = $this->db->connection->prepare(
-			"SELECT id,shorturl,category,url,created, COUNT(redirect_id) as hits
+			"SELECT id,shorturl,category,url,utm,created, COUNT(redirect_id) as hits
 			 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
 			 $whereString
 			 GROUP BY id ORDER BY created DESC LIMIT $offset, $limit"
