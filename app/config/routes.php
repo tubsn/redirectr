@@ -40,5 +40,8 @@ $routes->get('/admin/{id:\d+}/delete/{token}', 'Usermanagement@delete');
 $routes->post('/admin/{id:\d+}', 'Usermanagement@update');
 */
 
+// Redirct Any Article IDs
+$routes->get('/{id:[0-9]{8}}', 'Redirect@article_id');
+
 // Generall Redirect Capture All
 $routes->get('/{shortURL}', 'Redirect@find');

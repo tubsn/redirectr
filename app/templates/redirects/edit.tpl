@@ -9,11 +9,11 @@
 		<fieldset class="form-2-cols">
 
 		<label>KurzURL:
-			<input type="text" required name="shorturl" placeholder="z.B. /foodies" value="<?=$redirect['shorturl']?>">
+			<input tabindex="1" type="text" required name="shorturl" placeholder="z.B. /foodies" value="<?=$redirect['shorturl']?>">
 		</label>
 
 		<label>Kategorie:
-			<select name="category">
+			<select tabindex="3" name="category">
 				<?php if ($redirect['category']): ?>
 				<option selected value="<?=$redirect['category']?>"><?=$redirect['category']?></option>
 				<?php endif ?>
@@ -26,9 +26,9 @@
 
 		<label>UTM-Automatik:<br/>
 			<?php if ($redirect['utm']): ?>
-			<input type="checkbox" name="utm" checked value="1">UTM Parameter an Link hängen
+			<input tabindex="4" type="checkbox" name="utm" checked value="1">UTM Parameter an Link hängen
 			<?php else: ?>
-			<input type="checkbox" name="utm" value="1">UTM Parameter an Link hängen
+			<input tabindex="4" type="checkbox" name="utm" value="1">UTM Parameter an Link hängen
 			<?php endif; ?>
 		</label>
 
@@ -36,18 +36,43 @@
 
 		<fieldset>
 		<label>ZielURL:
-			<input type="text" required name="url" placeholder="z.B. https://www.lr-online.de/ratgeber/foodies" value="<?=$redirect['url']?>">
+			<input tabindex="2" type="text" required name="url" placeholder="z.B. https://www.lr-online.de/ratgeber/foodies" value="<?=$redirect['url']?>">
 		</label>
 
 		</fieldset>
 
 
-		<button type="submit">Änderung speichern</button> <a href="/cms" class="button light">abbrechen und zurück</a>
+		<button tabindex="5" type="submit">Änderung speichern</button> <a href="<?=$referer?>" class="button light">abbrechen und zurück</a>
 
 	</form>
 
-	<figure style="text-center; max-width:200px; justify-self: center;">
+	<figure title="Klicken um QR-Code als SVG-Datei zu speichern" style="text-center; max-width:200px; justify-self: center; cursor:pointer;">
+	
 	<?=$qrcode?>
+
+	<script>
+	let btn = document.querySelector('.qrcode');
+	let svg = document.querySelector('.qrcode');
+
+	let triggerDownload = (imgURI, fileName) => {
+	let a = document.createElement('a');
+		a.setAttribute('download', '<?=$redirect['shorturl']?>-qrcode.svg');
+		a.setAttribute('href', imgURI);
+		a.setAttribute('target', '_blank');
+		a.click();
+	}
+
+	let save = () => {
+		let data = (new XMLSerializer()).serializeToString(svg);
+		let svgBlob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
+		let url = URL.createObjectURL(svgBlob);
+		triggerDownload(url);;
+	}
+
+	btn.addEventListener('click', save);
+
+	</script>
+
 	</figure>
 
 

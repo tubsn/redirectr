@@ -20,9 +20,12 @@ class CMS extends Controller {
 		$this->view->pager = $pager->htmldata;
 		$offset = $pager->offset;
 
+		$this->view->cat = strip_tags($category);
 		$this->view->stats = $this->Redirects->category_stats($category);
 		$this->view->redirects = $this->Redirects->list($category, $offset, $itemsPerPage);
 
+		$this->view->referer('/cms/category/' . $category);
+		if (is_null($category)) {$this->view->referer('/cms');}
 		$this->view->render('redirects/index');
 
 	}
@@ -33,7 +36,7 @@ class CMS extends Controller {
 
 	public function save() {
 		$newID = $this->Redirects->new($_POST);
-		$this->view->redirect('/cms');
+		$this->view->back('/cms');
 	}
 
 	public function edit($id) {
@@ -57,16 +60,23 @@ class CMS extends Controller {
 		];
 
 		$this->Redirects->set($data, $id);
-		$this->view->redirect('/cms');
+		$this->view->back('/cms');
 	}
 
 	public function delete($id) {
 		$this->Redirects->delete($id);
 		$this->Redirects->remove_tracking($id);
-		$this->view->redirect('/cms');
+		$this->view->back('/cms');
 	}
 
 	public function stats() {
+
+		$this->view->chart = $this->Tracking->hits_by_day(null, date('Y-m-d', strtotime('-90 days')));
+		$this->view->latest = $this->Tracking->latest_hits(3, 10);
+		$this->view->redirects = $this->Redirects->most_clicks();
+		$this->view->stats = $this->Redirects->category_stats($category);
+
+		$this->view->referer('/cms/stats');
 		$this->view->render('redirects/stats');
 	}
 
@@ -77,6 +87,8 @@ class CMS extends Controller {
 
 		$this->view->query = $query;
 		$this->view->redirects = $this->Redirects->find($query);
+
+		$this->view->referer('/search/?q=' . $query);
 		$this->view->render('redirects/index');
 
 	}

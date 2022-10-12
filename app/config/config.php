@@ -6,6 +6,7 @@
 define('CATEGORIES', [
 	'Allgemein',
 	'Marketing',
+	'Anzeigen',
 	'Redaktion',
 	'Portal',
 ]);

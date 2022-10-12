@@ -40,6 +40,9 @@ class Redirects extends Model
 		return $this->entries_with_tracking($filter, null, $offset, $limit);
 	}
 
+	public function most_clicks($offset = null, $limit = null) {
+		return $this->entries_with_tracking(null, null, $offset, $limit, 'hits');
+	}
 
 	public function new($data) {
 
@@ -121,9 +124,10 @@ class Redirects extends Model
 		$redirect = $this->url_from_short($shortURL);
 
 		if ($redirect) {
-			$redirect['url'] = html_entity_decode($redirect['url']);
+			$url = $this->add_get_parameters_from_source($redirect['url']);
+			$url = html_entity_decode($url);
 			$this->tracking->track($redirect['id']);
-			return $redirect['url'];
+			return $url;
 		}
 
 		return $this->defaultURL;
@@ -195,7 +199,7 @@ class Redirects extends Model
 
 	}
 
-	private function auto_utm_parameters($data) {
+	public function auto_utm_parameters($data) {
 
 		if (!$data['utm']) {return $data;}
 
@@ -204,11 +208,18 @@ class Redirects extends Model
 			'utm_medium' => 'shortlink',
 			'utm_campaign' => $data['shorturl'],
 		];
-
+		$data['rawurl'] = $data['url'];
 		$data['url'] .= (strpos($data['url'], '?') ? '&' : '?') . http_build_query($additionalParams);
 
 		return $data;
 	}
+
+	public function add_get_parameters_from_source($destinationURL) {
+		if (empty($_GET)) {return $destinationURL;}
+		$destinationURL .= (strpos($destinationURL, '?') ? '&' : '?') . http_build_query($_GET);
+		return $destinationURL;
+	}
+
 
 	private function entry_with_tracking($id) {
 
@@ -229,7 +240,7 @@ class Redirects extends Model
 
 	}
 
-	private function entries_with_tracking($filter = null, $category = null, $offset = null, $limit = null) {
+	private function entries_with_tracking($filter = null, $category = null, $offset = null, $limit = null, $orderBy = 'created') {
 
 		if (!$offset) {$offset = 0;}
 		if (!$limit) {$limit = 1000;}
@@ -240,6 +251,7 @@ class Redirects extends Model
 		$preparedVariables = [];
 		$whereQuerys = [];
 		$whereString = '';
+		$having = '';
 
 		if ($filter) {
 			array_push($whereQuerys, "`shorturl` LIKE :filter");
@@ -251,21 +263,30 @@ class Redirects extends Model
 			$preparedVariables[':category'] = $category;
 		}
 
+		if ($orderBy == 'hits') {
+			$having = "HAVING `hits` >= 3";
+		}
+
 		if (count($whereQuerys)>0) {
 			$whereQuerys = implode(' AND ', $whereQuerys);
 			$whereString = 'WHERE ' . $whereQuerys;
 		}
 
 		$SQLstatement = $this->db->connection->prepare(
-			"SELECT id,shorturl,category,url,utm,created, COUNT(redirect_id) as hits
+			"SELECT id,shorturl,category,url,url as rawurl,utm,created, COUNT(redirect_id) as hits
 			 FROM $table LEFT JOIN $trackingTable ON redirect_id = id
 			 $whereString
-			 GROUP BY id ORDER BY created DESC LIMIT $offset, $limit"
+			 GROUP BY id 
+			 $having
+			 ORDER BY $orderBy DESC LIMIT $offset, $limit"
 		);
 
 		$SQLstatement->execute($preparedVariables);
+		$entries = $SQLstatement->fetchALL(\PDO::FETCH_UNIQUE);
 
-		return $SQLstatement->fetchALL(\PDO::FETCH_UNIQUE);
+		$entries = array_map([$this, 'auto_utm_parameters'], $entries);
+
+		return $entries;
 
 	}
 

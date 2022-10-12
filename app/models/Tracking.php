@@ -17,7 +17,7 @@ class Tracking extends Model
 
 	}
 
-	public function hits_by_day($id, $created = null) {
+	public function hits_by_day($id = null, $created = null) {
 
 		$hits = $this->daily_hits($id);
 		$daterange = $this->date_range(date('Y-m-d', strtotime('-90 days')),date('Y-m-d'));
@@ -65,9 +65,24 @@ class Tracking extends Model
 
 	}
 
-	private function daily_hits($id) {
+	private function daily_hits($id = null) {
 
 		$table = $this->db->table;
+
+		if (is_null($id)) {
+
+			$SQLstatement = $this->db->connection->prepare(
+				"SELECT DATE_FORMAT(date,'%Y-%m-%d'), count(*)
+				 FROM $table
+				 GROUP BY DATE_FORMAT(date,'%Y-%m-%d')
+				 "
+			);
+
+			$SQLstatement->execute([':id' => $id]);
+			return $SQLstatement->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
+			
+		}
+
 		$SQLstatement = $this->db->connection->prepare(
 			"SELECT DATE_FORMAT(date,'%Y-%m-%d'), count(*)
 			 FROM $table
@@ -78,6 +93,24 @@ class Tracking extends Model
 
 		$SQLstatement->execute([':id' => $id]);
 		return $SQLstatement->fetchAll(\PDO::FETCH_UNIQUE|\PDO::FETCH_COLUMN);
+
+	}
+
+	public function latest_hits($days = 3, $limit = 5) {
+
+		$table = $this->db->table;
+
+		$SQLstatement = $this->db->connection->prepare(
+			"SELECT *
+			FROM $table
+			LEFT JOIN redirects ON redirect_id = redirects.id
+			WHERE `date` >= (CURDATE() - INTERVAL $days DAY)
+			ORDER BY `date` desc
+			LIMIT $limit"
+		);
+
+		$SQLstatement->execute();
+		return $SQLstatement->fetchAll();
 
 	}
 

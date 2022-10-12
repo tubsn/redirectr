@@ -13,11 +13,14 @@ class Redirect extends Controller {
 	}
 
 	public function find($shortURL) {
-
 		$url = $this->Redirects->url($shortURL);
-		$this->view->redirect($url);
-
+		$this->view->redirect($url . $getParameters);
 	}
+
+	public function article_id($id) {
+		$this->view->redirect('https://www.lr-online.de/' . $id);
+	}
+
 
 	public function to_main_page() {
 		$this->view->redirect('https://www.lr-online.de');

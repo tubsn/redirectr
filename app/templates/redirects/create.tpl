@@ -8,11 +8,11 @@
 
 	<fieldset class="form-2-cols">
 	<label>Kurzurl:
-		<input type="text" required placeholder="z.B. /foodies" name="shorturl" value="">
+		<input autofocus tabindex="1" type="text" required placeholder="z.B. /foodies" name="shorturl" value="">
 	</label>
 
 	<label>Kategorie:
-		<select name="category">
+		<select tabindex="3" name="category">
 			<?php foreach (CATEGORIES as $category): ?>
 				<option value="<?=$category?>"><?=$category?></option>
 			<?php endforeach; ?>
@@ -20,17 +20,17 @@
 	</label>
 
 	<label>UTM-Automatik:<br/>
-		<input type="checkbox" name="utm" value="1"> UTM Parameter an Link hängen
+		<input tabindex="4" type="checkbox" name="utm" value="1"> UTM Parameter an Link hängen
 	</label>
 	</fieldset>
 
 	<fieldset>
 	<label>ZielURL:
-		<input type="text" required placeholder="z.B. https://www.lr-online.de/ratgeber/foodies" name="url" value="">
+		<input tabindex="2" type="text" required placeholder="z.B. https://www.lr-online.de/ratgeber/foodies" name="url" value="">
 	</label>
 	</fieldset>
 
-	<button type="submit">Kurzlink speichern</button> <a href="/cms" class="button light">abbrechen und zurück</a>
+	<button tabindex="5" type="submit">Kurzlink speichern</button> <a href="<?=$referer?>" class="button light">abbrechen und zurück</a>
 
 </form>
 

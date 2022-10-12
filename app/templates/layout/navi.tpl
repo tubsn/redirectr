@@ -3,10 +3,10 @@
 <nav class="main-nav">
 	<ul>
 		<li class="compare-logo-li"><a href="/cms"><b>redirectR</b></a></li>
-		<!--<li><a href="/cms">Alle Anzeigen</a></li>-->
 		<?php foreach (CATEGORIES as $category): ?>
 		<li><a href="/cms/category/<?=strtolower($category)?>"><?=$category?></a></li>
 		<?php endforeach; ?>
+		<li><a href="/cms/stats">Statistiken</a></li>
 	</ul>
 
 	<ul>
